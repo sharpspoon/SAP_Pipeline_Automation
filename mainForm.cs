@@ -44,10 +44,6 @@ namespace SAP_Pipeline_Automation
                     DataTable data = new DataTable();
                     sda.Fill(data);
                     importedfileDataGridView.DataSource = data;
-
-                    //Begin code to modify the table
-                    //importedfileDataGridView.Rows.Remove(importedfileDataGridView.Rows[0]);
-                    //importedfileDataGridView.Columns.Remove(importedfileDataGridView.Columns[0]);
                 }
             }
         }
@@ -82,6 +78,41 @@ namespace SAP_Pipeline_Automation
                 objConn.Close();
                 return dtResult; //Returning Dattable  
             }
+        }
+
+        private void servicesUploadButton_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.CheckFileExists = true;
+            openFileDialog.AddExtension = true;
+            openFileDialog.Multiselect = true;
+            openFileDialog.Filter = "Excel files (*.xlsx)|*.xlsx";
+
+            if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                foreach (string fileName in openFileDialog.FileNames)
+                {
+                    String name = "BASE-Services";
+                    String constr = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" +
+                                    fileName +
+                                    ";Extended Properties='Excel 12.0 XML;HDR=YES;';";
+
+                    OleDbConnection con = new OleDbConnection(constr);
+                    OleDbCommand oconn = new OleDbCommand("Select * From [" + name + "$]", con);
+                    con.Open();
+
+                    OleDbDataAdapter sda = new OleDbDataAdapter(oconn);
+                    DataTable data = new DataTable();
+                    sda.Fill(data);
+                    servicesImportedFileDataGridView.DataSource = data;
+                }
+            }
+        }
+
+        private void archivePreviousDistributionFilesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var url = "mailto:robin.ward01@sap.com?subject=Archive Previous Distribution Files";
+            Process.Start(url);
         }
     }
 }
